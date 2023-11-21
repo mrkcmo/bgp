@@ -6,27 +6,30 @@ from getpass import getpass
 import textfsm
 from tabulate import tabulate
 
+
 class GetRoutes():
-    def __init__(self, device, username, password):
+    def __init__(self, device, username, password, verbose):
         self.device = device
         self.username = username
         self.password = password
+        self.verbose = verbose
 
     def connectDevice(self):
         remote_device = {
-            'device_type' : 'autodetect',
-            'host' : self.device,
-            'username' : self.username,
-            'password' : self.password,
-            'secret' : self.password
+            'device_type': 'autodetect',
+            'host': self.device,
+            'username': self.username,
+            'password': self.password,
+            'secret': self.password
         }
 
         guesser = SSHDetect(**remote_device)
         best_match = guesser.autodetect()
-        print(best_match)
-        print(guesser.potential_matches)
+        if verbose:
+            print(best_match)
+            print(guesser.potential_matches)
         remote_device["device_type"] = best_match
-        
+
         with ConnectHandler(**remote_device) as net_connect:
             net_connect.enable()
             prompt = net_connect.find_prompt()
@@ -44,8 +47,9 @@ class GetRoutes():
                 re_table = textfsm.TextFSM(f)
                 header = re_table.header
                 result = re_table.ParseText(routes)
-                #  print(result)
-                #  print(tabulate(result, headers=header))
+                if verbose:
+                    print(result)
+                    print(tabulate(result, headers=header))
                 output.write(tabulate(result, headers=header))
                 output.close()
 
@@ -59,12 +63,13 @@ if __name__ == "__main__":
                                      epilog='Created by Chris Fortner')
     parser.add_argument('-u', '--username', required=True)
     parser.add_argument('-d', '--device', required=True)
-    
+    parser.add_argument('-v', '--verbose', action='store_true', required=False)
+
     args = parser.parse_args()
-    
+
     username = args.username
     device = args.device
+    verbose = args.verbose
     password = getpass()
-    run = GetRoutes(device, username, password)
+    run = GetRoutes(device, username, password, verbose)
     run.connectDevice()
-    
