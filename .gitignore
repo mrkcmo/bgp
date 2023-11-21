@@ -1,0 +1,5 @@
+*.csv
+pyvenv.cfg
+/bin
+/lib
+/include
