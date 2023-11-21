@@ -58,7 +58,7 @@ class GetRoutes():
 
 if __name__ == "__main__":
     ''' Main Function Call to Start the Script '''
-    parser = argparse.ArgumentParser(prog='Get BGP Routes',
+    parser = argparse.ArgumentParser(prog='grab_bgp_routes.py',
                                      description='This script will log into the device and grab the BP routes and parse them into a CSV file.',
                                      epilog='Created by Chris Fortner')
     parser.add_argument('-u', '--username', required=True)
